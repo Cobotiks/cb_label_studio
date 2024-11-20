@@ -5,19 +5,19 @@ import { destroy, detach, flow, getEnv, getParent, getSnapshot, isRoot, types, w
 import uniqBy from "lodash/uniqBy";
 import InfoModal from "../components/Infomodal/Infomodal";
 import { Hotkey } from "../core/Hotkey";
+import { destroy as destroySharedStore } from "../mixins/SharedChoiceStore/mixin";
 import ToolsManager from "../tools/Manager";
 import Utils from "../utils";
 import { guidGenerator } from "../utils/unique";
 import { clamp, delay, isDefined } from "../utils/utilities";
+import { CREATE_RELATION_MODE } from "./Annotation/LinkingModes";
 import AnnotationStore from "./Annotation/store";
-import { ControlButton } from "./ControlButton";
 import Project from "./ProjectStore";
 import Settings from "./SettingsStore";
 import Task from "./TaskStore";
 import { UserExtended } from "./UserStore";
 import { UserLabels } from "./UserLabels";
 import {
-  FF_BULK_ANNOTATION,
   FF_CUSTOM_SCRIPT,
   FF_DEV_1536,
   FF_LSDV_4620_3_ML,
@@ -27,7 +27,7 @@ import {
   isFF,
 } from "../utils/feature-flags";
 import { CommentStore } from "./Comment/CommentStore";
-import { destroy as destroySharedStore } from "../mixins/SharedChoiceStore/mixin";
+import { CustomButton } from "./CustomButton";
 
 const hotkeys = Hotkey("AppStore", "Global Hotkeys");
 
@@ -161,7 +161,14 @@ export default types
 
     queuePosition: types.optional(types.number, 0),
 
-    ...(isFF(FF_BULK_ANNOTATION) ? { controlButtons: types.optional(types.array(ControlButton), []) } : {}),
+    /**
+     * Project field used for applying classifications to comments
+     */
+    commentClassificationConfig: types.maybeNull(types.string),
+
+    customButtons: types.map(
+      types.union(types.string, CustomButton, types.array(types.union(types.string, CustomButton))),
+    ),
   })
   .preProcessSnapshot((sn) => {
     // This should only be handled if the sn.user value is an object, and converted to a reference id for other
@@ -177,6 +184,11 @@ export default types
           ? [currentUser, ...sn.users.filter(({ id }) => id !== currentUser.id)]
           : [currentUser];
       }
+    }
+    // fix for old version of custom buttons which were just an array
+    // @todo remove after a short time
+    if (Array.isArray(sn.customButtons)) {
+      sn.customButtons = { _replace: sn.customButtons };
     }
     return {
       ...sn,
@@ -343,6 +355,7 @@ export default types
           if (shouldDenyEmptyAnnotation && areResultsEmpty) return;
           if (annotationStore.viewingAll) return;
           if (isUpdateDisabled) return;
+          if (entity.isReadOnly()) return;
 
           entity?.submissionInProgress();
 
@@ -390,8 +403,8 @@ export default types
       hotkeys.addNamed("region:relation", () => {
         const c = self.annotationStore.selected;
 
-        if (c && c.highlightedNode && !c.relationMode) {
-          c.startRelationMode(c.highlightedNode);
+        if (c && c.highlightedNode && !c.isLinkingMode) {
+          c.startLinkingMode(CREATE_RELATION_MODE, c.highlightedNode);
         }
       });
 
@@ -400,7 +413,7 @@ export default types
         e.preventDefault();
         const c = self.annotationStore.selected;
 
-        if (c && c.highlightedNode && !c.relationMode) {
+        if (c && c.highlightedNode && !c.isLinkingMode) {
           c.highlightedNode.requestPerRegionFocus();
         }
       });
@@ -409,7 +422,7 @@ export default types
       hotkeys.addNamed("region:unselect", () => {
         const c = self.annotationStore.selected;
 
-        if (c && !c.relationMode && !c.isDrawing) {
+        if (c && !c.isLinkingMode && !c.isDrawing) {
           self.annotationStore.history.forEach((obj) => {
             obj.unselectAll();
           });
@@ -421,9 +434,14 @@ export default types
       hotkeys.addNamed("region:visibility", () => {
         const c = self.annotationStore.selected;
 
-        if (c && !c.relationMode) {
+        if (c && !c.isLinkingMode) {
           c.hideSelectedRegions();
         }
+      });
+
+      hotkeys.addNamed("region:visibility-all", () => {
+        const { selected } = self.annotationStore;
+        selected.regionStore.toggleVisibility();
       });
 
       hotkeys.addNamed("annotation:undo", () => {
@@ -441,8 +459,8 @@ export default types
       hotkeys.addNamed("region:exit", () => {
         const c = self.annotationStore.selected;
 
-        if (c && c.relationMode) {
-          c.stopRelationMode();
+        if (c && c.isLinkingMode) {
+          c.stopLinkingMode();
         } else if (!c.isDrawing) {
           c.unselectAll();
         }
@@ -550,9 +568,9 @@ export default types
       const res = fn();
 
       self.commentStore.setAddedCommentThisSession(false);
+
       // Wait for request, max 5s to not make disabled forever broken button;
       // but block for at least 0.2s to prevent from double clicking.
-
       Promise.race([Promise.all([res, delay(200)]), delay(5000)])
         .catch((err) => {
           showModal(err?.message || err || defaultMessage);
@@ -560,6 +578,7 @@ export default types
         })
         .then(() => self.setFlags({ isSubmitting: false }));
     }
+
     function incrementQueuePosition(number = 1) {
       self.queuePosition = clamp(self.queuePosition + number, 1, self.queueTotal);
     }
@@ -684,6 +703,24 @@ export default types
         await getEnv(self).events.invoke("rejectAnnotation", self, { isDirty, entity, comment });
         self.incrementQueuePosition(-1);
       }, "Error during reject, try again");
+    }
+
+    function handleCustomButton(button) {
+      if (self.isSubmitting) return;
+
+      handleSubmittingFlag(async () => {
+        const entity = self.annotationStore.selected;
+
+        entity.beforeSend();
+        // @todo add needsValidation or something like that as a parameter to custom buttons
+        // if (!entity.validate()) return;
+
+        const isDirty = entity.history.canUndo;
+
+        await getEnv(self).events.invoke("customButton", self, button, { isDirty, entity });
+        self.incrementQueuePosition();
+        entity.dropDraft();
+      }, `Error during handling ${button} button, try again`);
     }
 
     /**
@@ -936,10 +973,6 @@ export default types
       self.setUsers(uniqBy([...newUsers, ...oldUsers], "id"));
     }
 
-    function setControls(controls) {
-      self.controlButtons = cast(controls);
-    }
-
     return {
       setFlags,
       addInterface,
@@ -964,6 +997,7 @@ export default types
       updateAnnotation,
       acceptAnnotation,
       rejectAnnotation,
+      handleCustomButton,
       presignUrlForProject,
       setUsers,
       mergeUsers,
@@ -973,7 +1007,6 @@ export default types
       toggleComments,
       toggleSettings,
       toggleDescription,
-      setControls,
 
       setAutoAnnotation,
       setAutoAcceptSuggestions,

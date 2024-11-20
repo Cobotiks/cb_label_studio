@@ -15,9 +15,6 @@ export const FF_DEV_1536 = "ff_front_dev_1536_taxonomy_user_labels_150222_long";
 // New Audio 2.0 UI
 export const FF_DEV_1713 = "ff_front_DEV_1713_audio_ui_150222_short";
 
-// Clean unnecessary classification areas after deserialization
-export const FF_DEV_2100 = "ff_dev_2100_clean_unnecessary_areas_140422_short";
-
 // Allow to use html inside <Label/> tags
 export const FF_DEV_2128 = "ff_dev_2128_html_in_labels_150422_short";
 
@@ -27,9 +24,6 @@ export const FF_DEV_2290 = "ff_front_dev_2290_draft_in_annotation_history_short"
 export const FF_DEV_2431 = "ff_front_dev_2431_delete_polygon_points_080622_short";
 
 export const FF_DEV_2432 = "ff_front_dev_2432_auto_save_polygon_draft_210622_short";
-
-// Undo keypoints when create new polygon
-export const FF_DEV_2576 = "ff_feat_front_DEV_2576_undo_key_points_polygon_short";
 
 export const FF_DEV_2669 = "ff_front_dev_2669_paragraph_author_filter_210622_short";
 
@@ -88,12 +82,6 @@ export const FF_DEV_3666 = "fflag_fix_front_dev_3666_max_usages_on_region_creati
  * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_dev_1284_auto_detect_undo_281022_short
  */
 export const FF_DEV_3873 = "fflag_feat_front_dev_3873_labeling_ui_improvements_short";
-
-/**
- * Filter component that filter regions on outliner component
- * @link https://app.launchdarkly.com/default/production/features/fflag_feat_front_lsdv_3025_outliner_filter_short
- */
-export const FF_LSDV_3025 = "fflag_feat_front_lsdv_3025_outliner_filter_short";
 
 /**
  * Allow shourtcuts button to work with visible main textarea when there is no focus
@@ -205,11 +193,6 @@ export const FF_LSDV_4711 = "fflag_fix_all_lsdv_4711_cors_errors_accessing_task_
 export const FF_LSDV_4712 = "fflag_feat_front_lsdv_4712_skipduplicates_editing_110423_short";
 
 /**
- * New Ranker tag; flag is used for `deleteAllRegions()` optimization
- */
-export const FF_LSDV_4832 = "fflag_feat_front_lsdv_4832_new_ranker_tag_120423_short";
-
-/**
  * Fixing issue with missed steps in timeseries with optimized data and zoom
  *
  * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_lsdv_4881_timeseties_points_missing_140423_short
@@ -238,11 +221,6 @@ export const FF_LSDV_4992 = "fflag_fix_front_lsdv_4992_hide_all_regions_04052023
  * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_lsdv_4998_missed_dynamic_children_030523_short
  */
 export const FF_LSDV_4998 = "fflag_fix_front_lsdv_4998_missed_dynamic_children_030523_short";
-
-/**
- * Add ability to show hints while hover over the choice
- */
-export const FF_PROD_309 = "fflag_feat_front_prod_309_choice_hint_080523_short";
 
 /**
  * Fix delay on double-click interactions in Image Segmentation
@@ -306,6 +284,8 @@ export const FF_BULK_ANNOTATION = "fflag_feat_all_leap_1181_bulk_annotation_shor
  * @link https://app.launchdarkly.com/projects/default/flags/fflag_feat_front_leap_1173_disable_postpone_skip_short
  */
 export const FF_LEAP_1173 = "fflag_feat_front_leap_1173_disable_postpone_skip_short";
+
+export const FF_PER_FIELD_COMMENTS = "fflag_feat_all_leap_1430_per_field_comments_100924_short";
 
 Object.assign(window, {
   APP_SETTINGS: {

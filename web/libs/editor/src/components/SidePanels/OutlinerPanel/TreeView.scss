@@ -56,13 +56,12 @@
       max-width: 100%;
 
       .ff_outliner_optim & {
-        align-items: flex-start;
+        align-items: center;
       }
     }
   }
 
   &-iconEle {
-    height: 24px;
     display: flex;
     flex: none;
     height: 32px;
@@ -94,7 +93,9 @@
     min-width: 0;
 
     .labels-list {
-      display: inline-block;
+      display: inline;
+      line-height: 1.2; // make it dense for multiline labels
+      padding: 2px 0; // + add a little padding so it won't be too close to the item edges
     }
   }
 
@@ -227,7 +228,7 @@
 .ocr {
   background: none;
   position: relative;
-  padding: 0 0 8px 0;
+  padding: 0 0 8px;
 
   &_empty {
     display: none;
