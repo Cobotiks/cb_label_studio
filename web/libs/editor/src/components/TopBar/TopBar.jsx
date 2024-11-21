@@ -7,7 +7,6 @@ import { Block, Elem } from "../../utils/bem";
 import { FF_BULK_ANNOTATION, FF_DEV_3873, isFF } from "../../utils/feature-flags";
 import { AnnotationsCarousel } from "../AnnotationsCarousel/AnnotationsCarousel";
 import { DynamicPreannotationsToggle } from "../AnnotationTab/DynamicPreannotationsToggle";
-import { CustomControls } from "../BottomBar/Controls";
 import { Actions } from "./Actions";
 import { Annotations } from "./Annotations";
 import { Controls } from "./Controls";
@@ -95,11 +94,7 @@ export const TopBar = observer(({ store }) => {
             )}
             {!isViewAll && store.hasInterface("controls") && (store.hasInterface("review") || !isPrediction) && (
               <Elem name="section" mod={{ flat: true }} style={{ width: 320, boxSizing: "border-box" }}>
-                {isFF(FF_BULK_ANNOTATION) && store.hasInterface("controls:custom") ? (
-                  <CustomControls annotation={entity} />
-                ) : (
-                  <Controls annotation={entity} />
-                )}
+                <Controls annotation={entity} />
               </Elem>
             )}
           </Elem>
