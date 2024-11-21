@@ -1,6 +1,6 @@
 {
-  "message": "fix: Text for import dialog about uploads (#6682)",
-  "commit": "08d3299e753ba9240d26c46624cdf8267fefa969",
-  "date": "2024-11-19T03:16:48.000Z",
+  "message": "fix: LEAP-1662: Add handling \"valueList\" attribute in visual config editor (#6683)",
+  "commit": "5f54d26bc4159e81b0fc22b2c6ddca16e4d6bcee",
+  "date": "2024-11-20T16:35:55.000Z",
   "branch": "develop"
 }

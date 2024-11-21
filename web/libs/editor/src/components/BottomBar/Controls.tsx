@@ -106,6 +106,8 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
       ],
     );
 
+    if (annotation.isNonEditableDraft) return null;
+
     const buttonsBefore = customButtons.get("_before");
     const buttonsReplacement = customButtons.get("_replace");
     const firstToRender = buttonsReplacement ?? buttonsBefore;
