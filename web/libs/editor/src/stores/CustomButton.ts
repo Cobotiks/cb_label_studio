@@ -1,4 +1,4 @@
-import { type Instance, type SnapshotIn, types } from "mobx-state-tree";
+import { applySnapshot, getSnapshot, type Instance, type SnapshotIn, types } from "mobx-state-tree";
 import { guidGenerator } from "../utils/unique";
 
 export type CustomButtonType = Instance<typeof CustomButton>;
@@ -22,8 +22,6 @@ export const CustomButton = types
   })
   .actions((self) => ({
     updateState(newState: CustomButtonSnType) {
-      for (const key in newState) {
-        self[key] = newState[key];
-      }
+      applySnapshot(self, Object.assign({}, getSnapshot(self), newState));
     },
   }));
