@@ -61,7 +61,7 @@ const Model = types
 
     // Indicates that it could exist without information about objects, taskData and regions
     get isIndependent() {
-      return self.toTag ? self.toTag.isIndependent : false;
+      return self.toTag?.isIndependent ?? false;
     },
   }))
   .actions((self) => ({
