@@ -5,16 +5,13 @@ import { types } from "mobx-state-tree";
  * @todo it's used by too much files, so that's for later
  * Meta Information
  * Additional information for regions and their results, like text and lead_time
+ * Only text is used here actually, lead_time is stored directly in results
  */
 const NormalizationMixin = types
   .model({
     meta: types.frozen<{ text?: string[] }>({}),
   })
   .actions((self) => ({
-    setMetaValue(key: string, value: any) {
-      self.meta = { ...self.meta, [key]: value };
-    },
-
     /**
      * Set meta text
      * @param {*} text
