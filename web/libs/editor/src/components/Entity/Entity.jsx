@@ -221,7 +221,7 @@ export default observer(({ store, annotation }) => {
             onChange={(ev) => {
               const { value } = ev.target;
 
-              node.setNormInput(value);
+              node.setMetaText(value);
             }}
             style={{ marginBottom: "0.5em" }}
             placeholder="Meta Information"

@@ -9,15 +9,6 @@ import { types } from "mobx-state-tree";
 const NormalizationMixin = types
   .model({
     meta: types.frozen<{ text?: string[] }>({}),
-    // @todo do we really need it? it's used to store current value from input
-    normInput: types.maybeNull(types.string),
-  })
-  .preProcessSnapshot((sn) => {
-    if (!sn.meta) return sn;
-    return {
-      ...sn,
-      normInput: sn.meta?.text?.[0] ?? null,
-    };
   })
   .actions((self) => ({
     setMetaValue(key: string, value: any) {
@@ -37,10 +28,6 @@ const NormalizationMixin = types
         delete adjusted.text;
         self.meta = adjusted;
       }
-    },
-
-    setNormInput(val: string) {
-      self.normInput = val;
     },
   }))
   .actions((self) => ({
