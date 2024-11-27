@@ -40,7 +40,7 @@ When performing multi-page annotations, you'll see a new navigation menu:
 
 !!! info Tip
     * To navigate to a specific page, click on the page numbers in the center and enter the desired page. 
-    * You can also use the following hot keys to navigate: `command + left` /`command + right` or `ctrl + left`/`ctrl + right`.
+    * You can also use the following hot keys to navigate: `command + left`/`command + right` or `ctrl + left`/`ctrl + right`.
 
 
 ## Labeling configuration
