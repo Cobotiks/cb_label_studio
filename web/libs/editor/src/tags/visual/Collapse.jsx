@@ -78,7 +78,7 @@ const PanelModel = types
       // we may still want to show it even if there is no data
       // if (self.value && self.value[0] === "$") return false;
 
-      // In other cases Panel can exist independent if it hase some independent children
+      // In other cases Panel can exist independent if it has some independent children
       return !!self.children?.some((c) => {
         return c.isIndependent === true;
       });
