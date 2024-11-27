@@ -216,7 +216,7 @@ export default observer(({ store, annotation }) => {
         <Form
           style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
           onFinish={() => {
-            // this component is not used in the new interface anyway
+            // `normInput` is undefined, but this component is not used in the new interface anyway
             node.setMetaText(node.normInput);
             setEditMode(false);
           }}
