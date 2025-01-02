@@ -41,9 +41,11 @@ services:
       - POSTGRE_HOST=db
       - LABEL_STUDIO_HOST=${LABEL_STUDIO_HOST:-}
       - JSON_LOG=1
+      - FUTURE_SAVE_TASK_TO_STORAGE=1
     #      - LOG_LEVEL=DEBUG
     volumes:
       - ./mydata:/label-studio/data:rw
+      - ./service-account-file.json:/home/cb_label_studio/key.json:ro
     command: label-studio-uwsgi
 
   db:
